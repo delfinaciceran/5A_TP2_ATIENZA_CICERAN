@@ -1,57 +1,64 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ListaNotas from "@/components/ListaNotas";
-import styles from "./Notas.module.css";
+import { useSocket } from "@/hooks/page"; // Ajusta la ruta según tu proyecto
 
-export default function NotasPage() {
-  const [notas, setNotas] = useState([8, 5, 10]);
-  const [cargando, setCargando] = useState(true);
+export default function SocketChat() {
+    const { socket, isConnected } = useSocket();
+    const [mensajes, setMensajes] = useState([]);
+    const [contador, setContador] = useState(0);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCargando(false);
-    }, 2000);
+    const handleSendPing = () => {
+        if (socket) {
+            socket.emit("pingAll", { msg: "Hola desde mi compu" });
+        }
+    };
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    document.title = `Pio Promedios - ${notas.length} notas`;
-  }, [notas]);
-
-  const agregarNota = (nuevaNota) => {
-    const copia = [];
-    notas.forEach((n) => copia.push(n));
-    copia.push(nuevaNota);
-    setNotas(copia);
-  };
-
-  const eliminarNota = (indice) => {
-    const copia = [];
-    notas.forEach((n, i) => {
-      if (i !== indice) copia.push(n);
-    });
-    setNotas(copia);
-  };
-
-  const renderizarContenido = () => {
-    if (cargando) {
-      return <p className={styles.cargando}>Cargando las notas...</p>;
+    function emitirEvento() {
+        socket.emit("eventoPersonalizado");
     }
-    return (
-      <ListaNotas
-        notas={notas}
-        onAgregar={agregarNota}
-        onEliminar={eliminarNota}
-      />
-    );
-  };
 
-  return (
-    <div className={styles.contenedor}>
-      <h1>Página de Notas</h1>
-      {renderizarContenido()}
-    </div>
-  );
+    useEffect(() => {
+        if (!socket) return;
+
+        console.log("Web Socket Conectado");
+
+        socket.on("pingAll", (data) => {
+            console.log(data);
+            setMensajes((prev) => [...prev, data]);
+        });
+
+        socket.on("respuestaPersonalizada", (data) => {
+            setContador(data.contador);
+        });
+
+    }, [socket]);
+
+
+    return (
+        <div >
+            <p>{isConnected ? "🟢 Conectado al servidor" : "🔴 Desconectado"}</p>
+
+            {/* b. Botón Enviar ping a todos */}
+            <button onClick={handleSendPing} disabled={!isConnected}>
+                Enviar ping a todos
+            </button>
+
+            {/* d. Renderizar la lista de mensajes recibidos */}
+            <ul>
+                {mensajes.map((item, index) => (
+                    <li key={index}>
+                        {typeof item === "object" && item !== null ? item.msg || JSON.stringify(item) : item}
+                    </li>
+                ))}
+            </ul>
+
+            <button onClick={emitirEvento} disabled={!isConnected}>
+                Contar +1
+            </button>
+
+            {/* e. Mostrar en pantalla: "Contador: X" */}
+            <p>Contador: {contador}</p>
+        </div>
+    );
 }
