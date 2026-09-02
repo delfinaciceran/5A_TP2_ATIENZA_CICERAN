@@ -20,22 +20,20 @@ export default function ChatPage() {
 
     socket.emit("joinRoom", { room: sala });
 
-    // Escuchar mensajes entrantes
-    const handleNewMessage = (data) => {
+    const handleNuevosMsg = (data) => {
       setConversacion((prev) => [...prev, data]);
     };
 
-    socket.on("newMessage", handleNewMessage);
+    socket.on("newMessage", handleNuevosMsg);
 
-    // Limpieza de listener al desmontar o cambiar la sala
     return () => {
-      socket.off("newMessage", handleNewMessage);
+      socket.off("newMessage", handleNuevosMsg);
     };
   }, [socket, sala]);
 
-  // c. Función para emitir sendMessage
-  const handleSendMessage = (e) => {
-    e.preventDefault();
+
+  const handleSendMsg = (event) => {
+    event.preventDefault();
     if (!mensaje.trim() || !socket) return;
 
     socket.emit("sendMessage", { message: mensaje, room: sala, usuario });
@@ -68,11 +66,11 @@ export default function ChatPage() {
       </div>
 
       {/* c. Input y botón Enviar */}
-      <form onSubmit={handleSendMessage} style={{ display: "flex", gap: "10px" }}>
+      <form onSubmit={handleSendMsg} style={{ display: "flex", gap: "10px" }}>
         <input
           type="text"
           value={mensaje}
-          onChange={(e) => setMensaje(e.target.value)}
+          onChange={(event) => setMensaje(event.target.value)}
           placeholder="Escribe un mensaje..."
           style={{ flex: 1, padding: "8px" }}
         />

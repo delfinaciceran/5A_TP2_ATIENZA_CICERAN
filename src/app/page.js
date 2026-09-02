@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 export default function Home() {
   const router = useRouter();
 
@@ -13,13 +12,15 @@ export default function Home() {
 
   // b. Función para navegar pasando query params
   const handleEnterChat = () => {
-    if (usuario.trim() !== "" && sala.trim() !== "") {
+    if (usuario.trim() !== "" && sala.trim() == "monarquia") {
       router.push(`/chat?sala=${sala}&usuario=${usuario}`);
     }
   };
 
   // c. Condición para validar que ambos campos tengan contenido
-  const isValid = usuario.trim() !== "" && sala.trim() !== "";
+  const valido = usuario.trim() !== "" && sala.trim() !== "";
+
+
 
   return (
     <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "10px", maxWidth: "300px" }}>
@@ -47,12 +48,12 @@ export default function Home() {
       </div>
 
       {/* c. Conditional Rendering: Botón deshabilitado si usuario o sala están vacíos */}
-      <button onClick={handleEnterChat} disabled={!isValid}>
+      <button onClick={handleEnterChat} disabled={!valido}>
         Entrar al chat
       </button>
 
       {/* Mensaje condicional con && si faltan datos */}
-      {!isValid && (
+      {!valido && (
         <p style={{ color: "red", fontSize: "14px" }}>
           Por favor ingresa un usuario y una sala para continuar.
         </p>
@@ -60,8 +61,7 @@ export default function Home() {
 
       <hr />
 
-      {/* d. Enlace a /socket con <Link> */}
-      <Link href="/socket">
+       <Link href="/Socket">
         Ir a prueba de Socket (Ping / Contador)
       </Link>
     </div>

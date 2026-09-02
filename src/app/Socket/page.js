@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSocket } from "@/hooks/page"; // Ajusta la ruta según tu proyecto
+import { useSocket } from "@/hooks/page";
 
 export default function SocketChat() {
     const { socket, isConnected } = useSocket();
@@ -39,16 +39,15 @@ export default function SocketChat() {
         <div >
             <p>{isConnected ? "🟢 Conectado al servidor" : "🔴 Desconectado"}</p>
 
-            {/* b. Botón Enviar ping a todos */}
+        
             <button onClick={handleSendPing} disabled={!isConnected}>
                 Enviar ping a todos
             </button>
 
-            {/* d. Renderizar la lista de mensajes recibidos */}
             <ul>
-                {mensajes.map((item, index) => (
+                {mensajes.map((mensaje, index) => (
                     <li key={index}>
-                        {typeof item === "object" && item !== null ? item.msg || JSON.stringify(item) : item}
+                        {typeof mensaje === "object" && mensaje !== null ? mensaje.msg || JSON.stringify(mensaje) : mensaje}
                     </li>
                 ))}
             </ul>
@@ -57,7 +56,6 @@ export default function SocketChat() {
                 Contar +1
             </button>
 
-            {/* e. Mostrar en pantalla: "Contador: X" */}
             <p>Contador: {contador}</p>
         </div>
     );
